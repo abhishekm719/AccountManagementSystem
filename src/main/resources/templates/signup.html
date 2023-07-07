@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+<head>
+<meta charset="UTF-8">
+<title>This is Signup page</title>
+</head>
+<body>
+	<section>
+		<div class= "container">
+			<div class="row">
+				<div class="col-md-6 offset-md-3">
+					<div class="my-card mt-3">
+					
+					
+					<div th:if="${session.message}" th:classappend="${session.message.type}" class="alert alert-primary" role="alert">
+					  <p class= "text-center" th:text="${session.message.content}"></p>
+					
+					  <th:block th:text="${#session.removeAttribute('message')}"></th:block>
+					 
+					</div>
+					
+						<div class= "container text-center">
+						<img  style="width:80px;" id="image-1" alt=""  th:src="@{/img/membership.png}"/>
+						</div>
+						<h1 class= "text-center">Sign Up</h1>
+						<form novalidate th:action="@{/do_register}" method = "post" th:object="${customer}">
+						
+							<!-- Name field -->
+						 <div class="form-group">
+						   <label for="name_field">Name</label>
+						   <input 
+						   name="name"
+						   type="text" 
+						   class="form-control" 
+						   th:classappend="${#fields.hasErrors('name') ? 'is-invalid' : ''}"
+						   id="name_field" 
+						   placeholder="Enter here"
+						   required
+						   th:value="${customer.name}">
+						   <div class="invalid-feedback" th:each="e : ${#fields.errors('name')}" th:text="${e}">
+					        
+					      </div>
+						 </div>
+						
+						
+						<!-- DOB field -->
+						<div class="form-group">
+						   <label for="dob_field">Date of Birth</label>
+						   <input 
+						   name="dob"
+						   type="date" 
+						   class="form-control" 
+						   th:classappend="${#fields.hasErrors('dob') ? 'is-invalid' : ''}"
+						   id="dob_field" 
+						   placeholder="Enter here"
+						   required
+						   th:value="${customer.dob}">
+						   <div class="invalid-feedback" >					        
+					      </div>
+						 </div>
+						 
+						 <!-- gender field -->
+						<div class="form-group">
+						   <label for="gender_field">Gender</label>
+						   <input 
+						   name="gender"
+						   type="text" 
+						   class="form-control" 
+						   th:classappend="${#fields.hasErrors('gender') ? 'is-invalid' : ''}"
+						   id="gender_field" 
+						   placeholder="Enter here"
+						   required
+						   th:value="${customer.gender}">
+						   <div class="invalid-feedback" th:each="e : ${#fields.errors('gender')}" th:text="${e}">					        
+					      </div>
+						 </div>
+						 
+						 	<!-- email field -->
+						 <div class="form-group">
+						   <label for="email_field">Email</label>
+						   <input
+						   name="email" 
+						   type="email" 
+						   class="form-control" 
+						   th:classappend="${#fields.hasErrors('email') ? 'is-invalid' : ''}"
+						   id="email_field" 
+						   placeholder="Enter here"
+						   required
+						   th:value="${customer.email}">
+ 						  <div class="invalid-feedback"  th:each="e : ${#fields.errors('email')}" th:text="${e}">					        
+					      </div>
+						 </div>
+						
+							<!-- password field -->
+						 <div class="form-group">
+						   <label for="password_field">Password</label>
+						   <input
+						   name="password" 
+						   type="password" 
+						   class="form-control" 
+						   th:classappend="${#fields.hasErrors('password') ? 'is-invalid' : ''}"
+						   id="password_field" 
+						   placeholder="Enter here"
+						   required>
+						   <div class="invalid-feedback"  th:each="e : ${#fields.errors('password')}" th:text="${e}">
+					        
+					      </div>
+						 </div>
+						 
+						 
+						  <!-- accNo field -->
+						<div class="form-group">
+						   <label for="accNo_field">Account Number</label>
+						   <input 
+						   name="accNo"
+						   type="text" 
+						   class="form-control" 
+						   th:classappend="${#fields.hasErrors('accNo') ? 'is-invalid' : ''}"
+						   id="accNo_field" 
+						   placeholder="Enter here"
+						   required
+						   th:value="${customer.accNo}">
+						   <div class="invalid-feedback" th:each="e : ${#fields.errors('accNo')}" th:text="${e}">					        
+					      </div>
+						 </div>
+						 
+						   <!-- accTyp field -->
+						<div class="form-group">
+						   <label for="accNo_field">Account Type</label>
+						   <input 
+						   name="accTyp"
+						   type="text" 
+						   class="form-control" 
+						   th:classappend="${#fields.hasErrors('accTyp') ? 'is-invalid' : ''}"
+						   id="accTyp_field" 
+						   placeholder="Enter here"
+						   required
+						   th:value="${customer.accTyp}">
+						   <div class="invalid-feedback" th:each="e : ${#fields.errors('accTyp')}" th:text="${e}">					        
+					      </div>
+						 </div>
+						 
+						    <!-- balance field -->
+						<div class="form-group">
+						   <label for="accNo_field">Balance</label>
+						   <input 
+						   name="balance"
+						   type="text" 
+						   class="form-control" 
+						   th:classappend="${#fields.hasErrors('balance') ? 'is-invalid' : ''}"
+						   id="balance_field" 
+						   placeholder="Enter here"
+						   required
+						   th:value="${customer.balance}">
+						   <div class="invalid-feedback" th:each="e : ${#fields.errors('balance')}" th:text="${e}">					        
+					      </div>
+						 </div>
+						 
+						 
+						 <!-- t&c -->
+						 <div class="form-group form-check">
+						 <input type="checkbox"
+						 name="agreement"
+						 class="form-check-input"
+						 id="agreement"
+						 >
+						 
+						 <label for="agreement">Accept terms and conditions</label>
+						 
+						 </div>
+						 
+						 
+						 <div class="container text-center">
+						 	<button type="submit" class="btn bg-primary text-white">Submit</button>
+						 	<button type="reset" class="btn bg-warning text-white">Reset</button>
+						 	
+						 </div>
+						 
+						</form>
+					
+					
+					
+					
+					
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+</html>
