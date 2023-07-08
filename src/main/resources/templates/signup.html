@@ -157,6 +157,24 @@
 						 </div>
 						 
 						 
+						  
+						    <!-- nominee field -->
+						<div class="form-group">
+						   <label for="accNo_field">Nominee</label>
+						   <input 
+						   name="nominee"
+						   type="text" 
+						   class="form-control" 
+						   th:classappend="${#fields.hasErrors('nominee') ? 'is-invalid' : ''}"
+						   id="nominee_field" 
+						   placeholder="Enter here"
+						   required
+						   th:value="${customer.nominee}">
+						   <div class="invalid-feedback" th:each="e : ${#fields.errors('nominee')}" th:text="${e}">					        
+					      </div>
+						 </div>
+						 
+						 
 						 <!-- t&c -->
 						 <div class="form-group form-check">
 						 <input type="checkbox"

@@ -1,12 +1,16 @@
 package com.abhi.entity;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -38,24 +42,23 @@ public class Customer {
 	private String password;
 	
 	private String role;
-	
-	
+
 	private int accNo;
 	
 	@NotBlank(message="Account Type field is required")
 	private String accTyp;
 	
+	private double balance;
+	
+	@NotBlank(message="Nominee Type field is required")
+	private String nominee;
 
-
-	private int balance;
 	
-//	private String address;
-//	private String city;
-//	private int pin;
-//	private String City;
+	@OneToMany(cascade=CascadeType.ALL,mappedBy="customer")
+	private List<Transaction> transaction=new ArrayList<>();
 	
-	
-	public Customer(int id, String name, Date dob, String gender, String email, String password, String role,int accNo, String accTyp, int balance) {
+	public Customer(int id, String name, Date dob, String gender, String email, 
+			String password, String role,int accNo, String accTyp, double balance,String nominee) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -67,6 +70,7 @@ public class Customer {
 		this.accNo = accNo;
 		this.accTyp = accTyp;
 		this.balance = balance;
+		this.nominee=nominee;
 	}
 	
 	public Customer() {
@@ -136,26 +140,36 @@ public class Customer {
 	public void setAccTyp(String accTyp) {
 		this.accTyp = accTyp;
 	}
-	public int getBalance() {
+	public double getBalance() {
 		return balance;
 	}
-	public void setBalance(int balance) {
+	public void setBalance(double balance) {
 		this.balance = balance;
+	}
+	
+	public String getNominee() {
+		return nominee;
+	}
+
+	public void setNominee(String nominee) {
+		this.nominee = nominee;
+	}
+
+	public List<Transaction> getTransaction() {
+		return transaction;
+	}
+
+	public void setTransaction(List<Transaction> transaction) {
+		this.transaction = transaction;
 	}
 
 	@Override
 	public String toString() {
 		return "Customer [id=" + id + ", name=" + name + ", dob=" + dob + ", gender=" + gender + ", email=" + email
 				+ ", password=" + password + ", role=" + role + ", accNo=" + accNo + ", accTyp=" + accTyp + ", balance="
-				+ balance + "]";
+				+ balance + ", nominee=" + nominee + ", transaction=" + transaction + "]";
 	}
 	
 
-	
-
-
-	
-	
-	
 	
 }

@@ -48,20 +48,34 @@
     
     <span onclick="toggleSideBar()" class="crossBtn">&times;</span>
     
+    	
+    
     	<a href="#"  th:href="@{/customer/index}" class="item"> <i class="fa-solid fa-user"></i> Your Profile</a>
     	<a href="#" th:href="@{/customer/balance}" class="item"> <i class="fa-solid fa-money-bill-transfer"></i> Balance</a>
     	<a href="#" th:href="@{/customer/withdrawal}" class="item"> <i class="fa-solid fa-money-bill-transfer"></i> Withdrawal</a>
-    	<a href="#" class="item"> <i class="fa-solid fa-money-bill-transfer"></i> Deposit</a>
-    	<a href="#" class="item"> <i class="fa-solid fa-envelope"></i> Ministatement</a>
+    	<a href="#" th:href="@{/customer/deposit}" class="item"> <i class="fa-solid fa-money-bill-transfer"></i> Deposit</a>
+    	<a href="#"  th:href="@{/customer/show-miniStatement/0}" class="item"> <i class="fa-solid fa-envelope"></i> Ministatement</a>
     	<a href="#" th:href="@{/logout}" class="item"> <i class="fa-sharp fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
     	<div class="divider"></div>
     </div>
      <!-- End sidebar -->
      
       <!-- Content -->
+      
     <div class="content">
     
     <i onclick="toggleSideBar()" class="fas fa-bars m-3"></i>
+    
+    
+    <div th:if="${session.message} " class="container text-center">
+    	<div th:classappend="${'alert-'+session.message.type}" class="alert" role="alert">
+		  <span th:text="${session.message.content}"></span>
+		</div>
+		
+		 <th:block th:text="${#session.removeAttribute('message')}"></th:block>
+    </div>
+     
+	
     
    	 <div th:replace="${content}"></div>
     

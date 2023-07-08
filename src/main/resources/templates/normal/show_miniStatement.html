@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="normal/base::layout(~{::section})">
+<head>
+<meta charset="UTF-8">
+<title>Customer Dashboard</title>
+</head>
+<body>
+	<section>
+	
+	
+	<h1>Ministatement</h1>
+	
+	<div class="card mr-3 ml-3">
+		<div class="card-body">
+		<h1 class="text-center">Your Transactions</h1>
+		
+			<table class="table">
+			  <thead>
+			    <tr>
+			      <th scope="col">#ID</th>
+			      <th scope="col">Date</th>
+			      <th scope="col">Amount</th>
+			      <th scope="col">Transactions</th>
+			      <th scope="col">Balance</th>
+			    </tr>
+			  </thead>
+			  <tbody>
+			    <tr th:each="c:${transaction}">
+			      <th scope="row" th:text="${'KDFC'+c.tId}">1</th>
+			      <td th:text="${c.date}">Mark</td>
+			      <td th:text="${c.amt}">Otto</td>
+			      <td th:text="${c.transac}">@mdo</td>
+			      <td th:text="${c.tBalance}" >Otto</td>
+			      
+			    </tr>
+			  
+			  </tbody>
+			</table>
+		
+		<!-- pagination -->
+		<nav aria-label="Page navigation example">
+		  <ul class="pagination">
+		    
+		    <li th:if="${currentPage != 0}" class="page-item"><a th:href="@{${currentPage-1}}" class="page-link" href="#">Previous</a></li>
+		    
+		    
+		    <li th:classappend="${currentPage==i-1?'active':''}"  th:each = " i:${#numbers.sequence(1,totalPages)}" class="page-item">
+		    <a th:href="@{${i-1}}" class="page-link"  href="#"><span th:text="${i}"></span> </a></li>
+		   
+		    
+		    <li th:if="${currentPage+1 != totalPages}" class="page-item"><a th:href="@{${currentPage+1}}" class="page-link" href="#">Next</a></li>
+		  </ul>
+		</nav>
+		
+		
+		</div>
+	
+	</div>
+	
+	</section>
+</body>
+</html>

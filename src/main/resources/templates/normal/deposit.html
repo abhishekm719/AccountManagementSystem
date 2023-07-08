@@ -9,7 +9,7 @@
 	<div class="card ">
 		<div class="card-body">
 		
-		<h3 class="text-center">Transaction-Withdrawal</h3>
+		<h3 class="text-center">Transaction-Deposit</h3>
 		
 		<div class="container-fluid mt-1">
 		
@@ -21,7 +21,7 @@
 					th:object="${transaction}"
 					
 					method="POST"
-					th:action="@{/customer/process-transaction}"
+					th:action="@{/customer/process-transactionDeposit}"
 					class="mt-2"
 					>
 					
@@ -40,7 +40,7 @@
 					  </div>
  
 						  <div class=" mr-3">
-						  		 <button type="submit"  class="btn btn-danger">Withdraw Amount</button>
+						  		 <button type="submit"  class="btn btn-danger">Deposit Amount</button>
 						  </div>
 					</form>
 				</div>
