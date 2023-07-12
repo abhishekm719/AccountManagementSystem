@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="normal/base::layout(~{::section})">
+<head>
+<meta charset="UTF-8">
+<title>Customer Dashboard</title>
+</head>
+<body>
+	<section>
+	
+	<h1>FD Details</h1>
+	
+	<div class="card mr-3 ml-3">
+		<div class="card-body">
+			<h3 class="text-center">Details of :<span th:text="${customer.name} "></span> FD </h3>
+	
+			<table class="table">
+			  <thead>
+			    <tr>
+			      <th scope="col">#ID</th>
+			      <th scope="col">Account number</th>
+			      <th scope="col">FD Amount</th>
+			      <th scope="col">Duration</th>
+			      <th scope="col">Maturity Date</th>
+			       <th scope="col">Maturity amount</th>
+			    </tr>
+			  </thead>
+			  <tbody>
+			    <tr th:each="c:${fixedDeposits}">
+			      <th scope="row" th:text="${'KDFC'+c.fdId}">1</th> 
+			      <td th:text="${c.accNo}">Otto</td>  
+			      <td th:text="${c.fdAmt}" >Otto</td>
+			      <td th:text="${c.duration}">@mdo</td>
+			      <td th:text="${c.mAmt}">@mdo</td> 
+			      <td th:text="${c.duration}">@mdo</td>  
+			      
+			 <!--      <form method="get" th:action="@{'nomineeDelete/'+${c.nId}}">
+			      <td> <button class= "btn btn-danger btn-sm">Delete</button>
+		
+			      </td>
+			      </form>
+			      
+			       <form method="post" th:action="@{'nomineeUpdate/'+${c.nId}}">
+			      <td>
+			      	<button  class= "btn btn-danger btn-sm">Update</button>
+			      </td>
+			      </form >
+			       -->
+			    </tr>
+			  </tbody>
+			</table>
+			    <div class=" mr-3">
+				  <a class="nav-link "  href="#" th:href="@{addNewFD}">Add New FD</a>
+	   		    </div>
+		</div>
+	
+	</div>
+	
+	</section>
+</body>
+</html>

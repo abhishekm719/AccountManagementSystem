@@ -16,17 +16,16 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class Transaction {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-
 	private int tId;
+	
 	private double amt;
 	private String transac;
 	private double tBalance;
-	
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(pattern="yyyy-MM-dd")
-
 	private Date date;
+	
 	@ManyToOne
 	private Customer customer;
 	
@@ -87,7 +86,7 @@ public class Transaction {
 		return "Transaction [tId=" + tId + ", amt=" + amt + ", transac=" + transac + ", tBalance=" + tBalance
 				+ ", date=" + date + ", customer=" + customer + "]";
 	}
-
+	
 	
 	
 }

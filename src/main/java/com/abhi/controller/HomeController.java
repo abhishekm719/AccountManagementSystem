@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.abhi.dao.AccountRepository;
 import com.abhi.dao.CustomerRepository;
+import com.abhi.entity.Account;
 import com.abhi.entity.Customer;
 import com.smart.helper.Message;
 
@@ -25,6 +28,8 @@ public class HomeController {
 	
 	@Autowired
 	private CustomerRepository customerRepository;
+	
+	private AccountRepository accountRepository;
 	
 	@RequestMapping("/")
 	public String home(Model model) {
@@ -44,6 +49,12 @@ public class HomeController {
 		return "signup";
 	}
 	
+//	@RequestMapping("/newAccount")
+//	public String newAccount(Model model) {
+//		model.addAttribute("title","Acount- KDFC Bank");
+//		model.addAttribute("account", new Account() );
+//		return "newAccount";
+//	}
 	//registering Customer
 	
 	@PostMapping("/do_register")
@@ -83,6 +94,11 @@ public class HomeController {
 		}
 	
 	}
+	
+	
+	//registering Customer Accounts
+	
+
 	
 	
 	// login

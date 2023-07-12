@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+<head>
+<meta charset="UTF-8">
+<title>This is new account page</title>
+</head>
+<body>
+	<section>
+		<div class= "container">
+			<div class="row">
+				<div class="col-md-6 offset-md-3">
+					<div class="my-card mt-3">
+					
+					
+						<div class= "container text-center">
+						<img  style="width:80px;" id="image-1" alt=""  th:src="@{/img/membership.png}"/>
+						</div>
+						<h1 class= "text-center">Fill the below details</h1>
+						<form novalidate th:action="@{/customer/process-nominee}" method = "post" th:object="${nominee}">
+						
+							<!-- Nominee name field -->
+						 <div class="form-group">
+						   <label for="accNo_field">Nominee name</label>
+						   <input 
+						   name="name"
+						   type="text" 
+						   class="form-control" 
+						   
+						   id="name_field" 
+						   placeholder="Enter here"
+						   required
+						   th:value="${nominee.name}">
+						   
+						 </div>
+						 
+						   <!-- relation field -->
+						<div class="form-group">
+						   <label for="accType_field">Relation </label>
+						   <input 
+						   name="relation"
+						   type="text" 
+						   class="form-control" 
+						  
+						   id="relation_field" 
+						   placeholder="Enter here"
+						   required
+						   th:value="${nominee.relation}">
+						   
+						 </div>
+						 
+						    <!-- address field -->
+						<div class="form-group">
+						   <label for="address_field">Address</label>
+						   <input 
+						   name="address"
+						   type="text" 
+						   class="form-control" 
+						   id="address_field" 
+						   placeholder="Enter here"
+						   required
+						   th:value="${nominee.address}">
+						  
+						 </div>
+						
+						 <div class="container text-center">
+						 	<button type="submit" class="btn bg-primary text-white">Submit</button>
+						 	<button type="reset"  class="btn bg-warning text-white">Reset</button>
+						 	
+						 	<div class=" mr-3">
+							  <a class="nav-link "  href="#" th:href="@{newNominee}">Back</a>
+				   		    </div>
+						
+						 </div>
+						 
+						</form>
+					
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+</html>

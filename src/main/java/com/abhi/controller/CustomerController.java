@@ -4,6 +4,7 @@ import java.security.Principal;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.config.web.server.ServerHttpSecurity.HttpsRedirectSpec;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,10 +20,19 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.abhi.dao.AccountRepository;
 import com.abhi.dao.CustomerRepository;
+import com.abhi.dao.FDRepository;
+import com.abhi.dao.MoneyTransferRepository;
+import com.abhi.dao.NomineeRepository;
 import com.abhi.dao.TransactionRepository;
+import com.abhi.entity.Account;
 import com.abhi.entity.Customer;
+import com.abhi.entity.FixedDeposit;
+import com.abhi.entity.MoneyTransfer;
+import com.abhi.entity.Nominee;
 import com.abhi.entity.Transaction;
 import com.smart.helper.Message;
 
@@ -35,6 +46,18 @@ public class CustomerController {
 	
 	@Autowired
 	private TransactionRepository transactionRepository;  
+	
+	@Autowired
+	private AccountRepository accountRepository;
+	
+	@Autowired
+	private  NomineeRepository nomineeRepository;
+	
+	@Autowired
+	private MoneyTransferRepository moneyTransferRepository;
+	
+	@Autowired
+	private FDRepository fdRepository;
 	
 	@ModelAttribute
 	public void addCommonData(Model model, Principal principal) {
@@ -58,44 +81,98 @@ public class CustomerController {
 		return "normal/balance";
 	}
 	
-	@GetMapping("/withdrawal")
-	public String withdrawal( Model model) {
+	@PostMapping("/withdrawal/{accNo}")
+	public String withdrawal(@PathVariable("accNo")Integer accNo, Model model) {
 		model.addAttribute("title","Withdrawal - KDFC Bank");
-		model.addAttribute("transaction",new Transaction());
 		
+		Account account = this.accountRepository.findById(accNo).get();
+		model.addAttribute("account",account);
 		return "normal/withdrawal";
 	}
-	@GetMapping("/deposit")
-	public String deposit( Model model) {
+	@PostMapping("/deposit/{accNo}")
+	public String deposit(@PathVariable("accNo")Integer accNo, Model model) {
 		model.addAttribute("title","Deposit - KDFC Bank");
-		model.addAttribute("transaction",new Transaction());
+		Account account = this.accountRepository.findById(accNo).get();
+		model.addAttribute("account",account);	
 		
 		return "normal/deposit";
 	}
 	
 	
 	//withdrawal transaction
+//	@PostMapping("/process-transaction1")
+//	public String processTransaction1(@ModelAttribute Transaction transaction,
+//			Principal principal,HttpSession session,@ModelAttribute Account account) {
+//		
+//		try {
+//
+//			String customerName = principal.getName();
+//			
+//			Customer customer = customerRepository.getcustomerByName(customerName);
+//			
+//			transaction.setCustomer(customer);
+//			
+//			
+//			System.out.println("Added to database");
+//			if(account.getaBalance()>transaction.getAmt()) {
+//				transaction.setDate(new Date(System.currentTimeMillis()));
+//				transaction.setTransac("Withdraw");
+//				
+//				account.setaBalance(account.getaBalance()-transaction.getAmt());
+//				transaction.settBalance(account.getaBalance());
+//				
+////				customer.setBalance(customer.getBalance()-transaction.getAmt());
+////				transaction.settBalance(customer.getBalance());
+//				customer.getTransaction().add(transaction);
+//				this.customerRepository.save(customer);
+//				System.out.println("transaction :"+transaction);
+//			session.setAttribute("message", new Message("Successful", "success"));
+//			}else {
+//				throw new Exception();
+//			}
+//			
+//		} catch (Exception e) {
+//			System.out.println("ERROR "+e.getMessage());
+//			e.printStackTrace();
+//			session.setAttribute("message", new Message("Failed", "danger"));
+//
+//		}
+//		return "normal/withdrawal";
+//	}
+//	
+//	
+
+	//withdrawal transaction
 	@PostMapping("/process-transaction")
-	public String processTransaction(@ModelAttribute Transaction transaction,
-			Principal principal,HttpSession session) {
+	public String processTransaction( Transaction transaction,
+			Principal principal,HttpSession session,@ModelAttribute Account account) {
 		
 		try {
 
 			String customerName = principal.getName();
 			
 			Customer customer = customerRepository.getcustomerByName(customerName);
+		
+			Account account2 = accountRepository.findById(account.getAccNo()).get();
 			
-			transaction.setCustomer(customer);
-			
-			System.out.println("Added to database");
-			if(customer.getBalance()>transaction.getAmt()) {
+			if(account2.getaBalance()>transaction.getAmt()) {
 				transaction.setDate(new Date(System.currentTimeMillis()));
 				transaction.setTransac("Withdraw");
-				customer.setBalance(customer.getBalance()-transaction.getAmt());
-				transaction.settBalance(customer.getBalance());
+				
+				account2.setaBalance(account2.getaBalance()-transaction.getAmt());
+				transaction.settBalance(account2.getaBalance());
+				
+//				customer.setBalance(customer.getBalance()-transaction.getAmt());
+//				transaction.settBalance(customer.getBalance());
 				customer.getTransaction().add(transaction);
+				transaction.setCustomer(customer);
+				account.setCustomer(customer);
 				this.customerRepository.save(customer);
-				System.out.println("transaction :"+transaction);
+				
+				this.accountRepository.save(account2);
+				
+				System.out.println("Added to database");
+//				System.out.println("transaction :"+transaction);
 			session.setAttribute("message", new Message("Successful", "success"));
 			}else {
 				throw new Exception();
@@ -107,33 +184,87 @@ public class CustomerController {
 			session.setAttribute("message", new Message("Failed", "danger"));
 
 		}
-		return "normal/withdrawal";
+		return "redirect:/customer/newAccount";
 	}
 	
-	//deposit transaction
+	
+	
+	
+	
+	
+//	//deposit transaction
+//	@PostMapping("/process-transactionDeposit")
+//	public String processTransactionDeposit(@ModelAttribute Transaction transaction,
+//			Principal principal,HttpSession session, Account account) {
+//		
+//		try {
+//
+//			String customerName = principal.getName();
+//			
+//			Customer customer = customerRepository.getcustomerByName(customerName);
+//			
+//			transaction.setCustomer(customer);
+//			
+//			System.out.println("Added to database");
+//			if(transaction.getAmt()<25000) {
+//				transaction.setDate(new Date(System.currentTimeMillis()));
+//				transaction.setTransac("Deposit");
+//				account.setaBalance(account.getaBalance()+transaction.getAmt());
+//				transaction.settBalance(account.getaBalance());
+////				customer.setBalance(customer.getBalance()+transaction.getAmt());
+////				transaction.settBalance(customer.getBalance());
+//
+//				
+//				customer.getTransaction().add(transaction);
+//				this.customerRepository.save(customer);
+//				System.out.println("transaction :"+transaction);
+//			session.setAttribute("message", new Message("Successful", "success"));
+//			}else {
+//				throw new Exception();
+//			}
+//			
+//		} catch (Exception e) {
+//			System.out.println("ERROR "+e.getMessage());
+//			e.printStackTrace();
+//			session.setAttribute("message", new Message("Failed", "danger"));
+//
+//		}
+//		return "normal/deposit";
+//	}
+//	
+	
+	
+	
 	@PostMapping("/process-transactionDeposit")
-	public String processTransactionDeposit(@ModelAttribute Transaction transaction,
-			Principal principal,HttpSession session) {
+	public String processTransactionDeposit( Transaction transaction,
+			Principal principal,HttpSession session,@ModelAttribute Account account) {
 		
 		try {
 
 			String customerName = principal.getName();
 			
 			Customer customer = customerRepository.getcustomerByName(customerName);
+		
+			Account account2 = accountRepository.findById(account.getAccNo()).get();
 			
-			transaction.setCustomer(customer);
-			
-			System.out.println("Added to database");
 			if(transaction.getAmt()<25000) {
 				transaction.setDate(new Date(System.currentTimeMillis()));
 				transaction.setTransac("Deposit");
-				customer.setBalance(customer.getBalance()+transaction.getAmt());
-				transaction.settBalance(customer.getBalance());
-
 				
+				account2.setaBalance(account2.getaBalance()+transaction.getAmt());
+				transaction.settBalance(account2.getaBalance());
+
+//				customer.setBalance(customer.getBalance()-transaction.getAmt());
+//				transaction.settBalance(customer.getBalance());
 				customer.getTransaction().add(transaction);
+				transaction.setCustomer(customer);
+				account.setCustomer(customer);
 				this.customerRepository.save(customer);
-				System.out.println("transaction :"+transaction);
+				
+				this.accountRepository.save(account2);
+				
+				System.out.println("Added to database");
+//				System.out.println("transaction :"+transaction);
 			session.setAttribute("message", new Message("Successful", "success"));
 			}else {
 				throw new Exception();
@@ -145,8 +276,9 @@ public class CustomerController {
 			session.setAttribute("message", new Message("Failed", "danger"));
 
 		}
-		return "normal/deposit";
+		return "redirect:/customer/newAccount";
 	}
+	
 	
 	
 
@@ -154,14 +286,7 @@ public class CustomerController {
 	@GetMapping("/show-miniStatement/{page}")
 	public String miniStatement(@PathVariable("page") Integer page, Model model,Principal principal){
 		model.addAttribute("title","MiniStatement - KDFC Bank");
-//		String customerName = principal.getName();
-//		
-//		Customer customer = customerRepository.getcustomerByName(customerName);
-//		
-//		transaction.setCustomer(customer);
-//		
-//		List<Transaction> transaction1=customer.getTransaction();
-//		System.out.println("transaction :"+transaction1);
+		
 		String customerName = principal.getName();
 		Customer customer= this.customerRepository.getcustomerByName(customerName);
 		
@@ -176,4 +301,284 @@ public class CustomerController {
 	}
 	
 	
+	//Overview
+		@GetMapping("/newAccount")
+		public String newAccountForm(Model model,Principal principal){
+			model.addAttribute("title","Account Details - KDFC Bank");
+			String customerName = principal.getName();
+			Customer customer= this.customerRepository.getcustomerByName(customerName);
+			
+			List<Account> accounts = this.accountRepository.findAccountByCustomer(customer.getId());
+
+			model.addAttribute("accounts",accounts);
+			
+			return "normal/account_detail";
+		}
+		
+		@GetMapping("/openNewAccount")
+		public String openNewAccount(Model model){
+			model.addAttribute("title","Account Details - KDFC Bank");
+
+			model.addAttribute("account",new Account());
+			
+			return "normal/newAccount_form";
+		}
+		
+		@PostMapping("/process-account")
+		public String processAccount(@ModelAttribute Account account,Principal principal, Model model) {
+			System.out.println("Data :"+account);
+			String customerName = principal.getName();
+		
+ 		    Customer customer = customerRepository.getcustomerByName(customerName);
+			
+ 		    account.setCustomer(customer);
+ 		    customer.getAccount().add(account);
+			this.customerRepository.save(customer);
+			model.addAttribute("account",new Account());
+		
+			return "normal/newAccount_form";
+		}
+		
+	
+		//Nominee
+		@GetMapping("/newNominee")
+		public String newNomineeForm(Model model,Principal principal){
+			model.addAttribute("title","Nominee Details - KDFC Bank");
+			String customerName = principal.getName();
+			Customer customer= this.customerRepository.getcustomerByName(customerName);
+			
+			List<Nominee> nominees = this.nomineeRepository.findAccountByCustomer(customer.getId());
+
+			model.addAttribute("nominees",nominees);
+			
+			return "normal/nominee_detail";
+		}
+		
+		@GetMapping("/addNewNominee")
+		public String addNewNominee(Model model){
+			model.addAttribute("title","Nominee Details - KDFC Bank");
+
+			model.addAttribute("nominee",new Nominee());
+			
+			return "normal/newNominee_form";
+		}
+		
+		//Nominee Updation transaction
+		@PostMapping("/process-nominee")
+		public String processNominee(@ModelAttribute Nominee nominee,Principal principal, Model model) {
+			System.out.println("Data :"+nominee);
+			String customerName = principal.getName();
+		
+ 		    Customer customer = customerRepository.getcustomerByName(customerName);
+			
+ 		    nominee.setCustomer(customer);
+ 		    customer.getNominee().add(nominee);
+			this.customerRepository.save(customer);
+			model.addAttribute("nominee",new Nominee());
+		
+			return "redirect:/customer/newNominee";
+		}
+		
+		
+		@PostMapping("/nomineeUpdate/{nId}")
+		public String nomineeUpdate(@PathVariable("nId")Integer nId, Model model,HttpSession session) {
+			model.addAttribute("title","Nominee Update - KDFC Bank");
+			
+			Nominee nominee = this.nomineeRepository.findById(nId).get();
+			
+			model.addAttribute("nominee",nominee);
+			session.setAttribute("message", new Message("Updated Sucessfully !","success"));
+			return "normal/nominee";
+		}
+		
+		
+//		//Nominee Updation transaction
+//		@PostMapping("/process-updation")
+//		public String processUpdation(Principal principal,HttpSession session,@ModelAttribute Nominee nominee) {
+//			
+//			try {
+//
+//				String customerName = principal.getName();
+//				
+//				Customer customer = this.customerRepository.getcustomerByName(customerName);
+//			
+//				//Nominee nominees = nomineeRepository.findById(nominee.getnId()).get();
+//				
+//					
+//					nominee.setCustomer(customer);
+//					//this.nomineeRepository.save(nominees);
+//					this.customerRepository.save(customer);
+//					
+//					System.out.println("Added to database");
+////					System.out.println("transaction :"+transaction);
+//				session.setAttribute("message", new Message("Successful", "success"));
+//				
+//			} catch (Exception e) {
+//				System.out.println("ERROR "+e.getMessage());
+//				e.printStackTrace();
+//				session.setAttribute("message", new Message("Failed", "danger"));
+//
+//			}
+//			return "normal/nominee_detail";
+//		}
+		
+		//Delete nominee
+		@GetMapping("/nomineeDelete/{nId}")
+		public String nomineeDelete(@PathVariable("nId")Integer nId, Model model, HttpSession session) {
+			model.addAttribute("title","Nominee Delete - KDFC Bank");
+			
+			Nominee nominee = this.nomineeRepository.findById(nId).get();
+			
+			nominee.setCustomer(null);
+			this.nomineeRepository.delete(nominee);
+			session.setAttribute("message", new Message("Deleted Sucessfully !","success"));
+			
+			//model.addAttribute("nominee",nominee);
+			return "redirect:/customer/newNominee";
+		}
+		
+		
+		//Money Transfer
+		@GetMapping("/moneyTransfer")
+		public String moneyTransfer(Model model,Principal principal,MoneyTransfer moneyTransfer){
+			model.addAttribute("title","Money Transfer - KDFC Bank");
+//			
+//			 int accNo = moneyTransfer.getfAccNo();
+			List<Account> account = this.accountRepository.findAll();
+			model.addAttribute("account",account);	
+			
+			return "normal/moneyTransfer_form";
+		}
+		
+		
+		//processing
+		@PostMapping("/process-MoneyTransfer")
+		public String processMoneyTransfer( Transaction transaction,
+				Principal principal,HttpSession session, Account account,@ModelAttribute MoneyTransfer moneyTransfer) {
+			
+			try {
+					System.err.println("money...transfer :"+moneyTransfer);
+					transaction.setAmt(moneyTransfer.getmAmt());
+				String customerName = principal.getName();
+				
+				Customer customer = customerRepository.getcustomerByName(customerName);
+				 int accNo = moneyTransfer.getfAccNo();
+				Account account2 = this.accountRepository.findById(accNo).get();
+				
+				if(account2.getaBalance()>moneyTransfer.getmAmt()) {
+					transaction.setDate(new Date(System.currentTimeMillis()));
+					transaction.setTransac("MoneyTransfer");
+					
+					account2.setaBalance(account2.getaBalance()-moneyTransfer.getmAmt());
+					transaction.settBalance(account2.getaBalance());
+					
+//					customer.setBalance(customer.getBalance()-transaction.getAmt());
+//					transaction.settBalance(customer.getBalance());
+					customer.getTransaction().add(transaction);
+					
+					transaction.setCustomer(customer);
+					//moneyTransfer.setCustomer(customer);
+					account.setCustomer(customer);
+					this.customerRepository.save(customer);
+					
+					this.accountRepository.save(account2);
+					
+					this.moneyTransferRepository.save(moneyTransfer);
+					System.out.println("Added to database");
+//					System.out.println("transaction :"+transaction);
+				session.setAttribute("message", new Message("Successful", "success"));
+				}else {
+					throw new Exception();
+				}
+				
+			} catch (Exception e) {
+				System.out.println("ERROR "+e.getMessage());
+				e.printStackTrace();
+				session.setAttribute("message", new Message("Account Not Found", "danger"));
+
+			}
+			return "normal/customer_dashboard";
+		}
+		
+		
+		//FD
+		
+
+		//Nominee
+		@GetMapping("/fdDetails")
+		public String fdDetail(Model model,Principal principal){
+			model.addAttribute("title","Nominee Details - KDFC Bank");
+			String customerName = principal.getName();
+			Customer customer= this.customerRepository.getcustomerByName(customerName);
+			List<Account> account = this.accountRepository.findAll();
+			model.addAttribute("account",account);	
+			List<FixedDeposit> fixedDeposits = this.fdRepository.findAccountByCustomer(customer.getId());
+
+			model.addAttribute("fixedDeposits",fixedDeposits);
+			
+			return "normal/fd_details";
+		}
+		
+		@GetMapping("/addNewFD")
+		public String addNewFD(Model model){
+			model.addAttribute("title","FD Details - KDFC Bank");
+
+			model.addAttribute("fixedDeposit",new FixedDeposit());
+			
+			return "normal/newFD_form";
+		}
+		
+		//processing
+				@PostMapping("/process-fd")
+				public String processfd( Transaction transaction,
+						Principal principal,HttpSession session, Account account,
+						@ModelAttribute FixedDeposit fixedDeposit) {
+					
+					try {
+							System.err.println("money...transfer :"+fixedDeposit);
+							transaction.setAmt(fixedDeposit.getFdAmt());
+						String customerName = principal.getName();
+						
+						Customer customer = customerRepository.getcustomerByName(customerName);
+						 int accNo = fixedDeposit.getAccNo();
+						Account account2 = this.accountRepository.findById(accNo).get();
+						
+						if(account2.getaBalance()>fixedDeposit.getFdAmt()) {
+							transaction.setDate(new Date(System.currentTimeMillis()));
+							transaction.setTransac("FD");
+							
+							account2.setaBalance(account2.getaBalance()-fixedDeposit.getFdAmt());
+							transaction.settBalance(account2.getaBalance());
+							
+//							customer.setBalance(customer.getBalance()-transaction.getAmt());
+//							transaction.settBalance(customer.getBalance());
+							customer.getTransaction().add(transaction);
+							
+							transaction.setCustomer(customer);
+							//moneyTransfer.setCustomer(customer);
+							account.setCustomer(customer);
+							
+							fixedDeposit.setCustomer(customer);
+							this.customerRepository.save(customer);
+							
+							this.accountRepository.save(account2);
+							
+							this.fdRepository.save(fixedDeposit);
+							System.out.println("Added to database");
+//							System.out.println("transaction :"+transaction);
+						session.setAttribute("message", new Message("Successful", "success"));
+						}else {
+							throw new Exception();
+						}
+						
+					} catch (Exception e) {
+						System.out.println("ERROR "+e.getMessage());
+						e.printStackTrace();
+						session.setAttribute("message", new Message("Account Not Found", "danger"));
+
+					}
+					return "normal/fd_details";
+				}
+				
+		
 }

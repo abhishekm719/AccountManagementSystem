@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="normal/base::layout(~{::section})">
+<head>
+<meta charset="UTF-8">
+<title>Customer Dashboard</title>
+</head>
+<body>
+	<section>
+	
+	<h1>Account Details</h1>
+	
+	<div class="card mr-3 ml-3">
+		<div class="card-body">
+			<h3 class="text-center">Details of :<span th:text="${customer.name} "></span> Accounts </h3>
+	
+			<table class="table">
+			  <thead>
+			    <tr>
+			      <th scope="col">#ID</th>
+			      <th scope="col">Account number</th>
+			      <th scope="col">Balance</th>
+			      <th scope="col">Account Type</th>
+			      <th scope="col">Withdraw</th>
+			       <th scope="col">Deposit</th>
+			    </tr>
+			  </thead>
+			  <tbody>
+			    <tr th:each="c:${accounts}">
+			      <th scope="row" th:text="${'KDFC'+c.aId}">1</th> 
+			      <td th:text="${c.accNo}">Otto</td>  
+			      <td th:text="${c.aBalance}" >Otto</td>
+			      <td th:text="${c.accType}">@mdo</td> 
+			      
+			      <form method="post" th:action="@{'withdrawal/'+${c.accNo}}">
+			      <td>
+			      	<button type="submit" class= "btn btn-danger btn-sm">Withdraw</button>
+		
+			      </td>
+			      </form>
+			      
+			       <form method="post" th:action="@{'deposit/'+${c.accNo}}">
+			      <td>
+			      	<button type="submit" class= "btn btn-danger btn-sm">Deposit</button>
+			      </td>
+			      </form >
+			    </tr>
+			  </tbody>
+			</table>
+			    <div class=" mr-3">
+				  <a class="nav-link "  href="#" th:href="@{openNewAccount}">Open a New Account</a>
+	   		    </div>
+		</div>
+	
+	</div>
+	
+	</section>
+</body>
+</html>

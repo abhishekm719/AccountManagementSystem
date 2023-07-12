@@ -48,13 +48,21 @@
     
     <span onclick="toggleSideBar()" class="crossBtn">&times;</span>
     
-    	
-    
-    	<a href="#"  th:href="@{/customer/index}" class="item"> <i class="fa-solid fa-user"></i> Your Profile</a>
-    	<a href="#" th:href="@{/customer/balance}" class="item"> <i class="fa-solid fa-money-bill-transfer"></i> Balance</a>
+    	<!--  
+    	<a href="#" th:href="@{/customer/balance}" class="item"> <i class="fa-solid fa-money-bill-transfer"></i> Overview</a>
+    	-->
+    	<a href="#" th:href="@{/customer/newAccount}" class="item"> <i class="fa-solid fa-money-bill-transfer"></i> Overview</a>
+    	<!--  
     	<a href="#" th:href="@{/customer/withdrawal}" class="item"> <i class="fa-solid fa-money-bill-transfer"></i> Withdrawal</a>
     	<a href="#" th:href="@{/customer/deposit}" class="item"> <i class="fa-solid fa-money-bill-transfer"></i> Deposit</a>
+    	-->
+    	<a href="#"  th:href="@{/customer/moneyTransfer}" class="item"> <i class="fa-solid fa-money-bill-transfer"></i> Money Transfer</a>
+    	<a href="#"  th:href="@{/customer/upiPayment}" class="item"> <i class="fa-solid fa-money-bill-transfer"></i>UPI payment</a>
+    	<a href="#"  th:href="@{/customer/fdDetails}" class="item"> <i class="fa-solid fa-money-bill-transfer"></i>FD</a>
+    	<a href="#"  th:href="@{/customer/newNominee}" class="item"> <i class="fa-solid fa-user"></i>Nominee</a>
+
     	<a href="#"  th:href="@{/customer/show-miniStatement/0}" class="item"> <i class="fa-solid fa-envelope"></i> Ministatement</a>
+    	<a href="#"  th:href="@{/customer/index}" class="item"> <i class="fa-solid fa-user"></i> Your Profile</a>
     	<a href="#" th:href="@{/logout}" class="item"> <i class="fa-sharp fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
     	<div class="divider"></div>
     </div>
