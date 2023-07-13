@@ -1,7 +1,7 @@
 package com.abhi.controller;
 
 import java.security.Principal;
-
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -28,12 +28,14 @@ import com.abhi.dao.FDRepository;
 import com.abhi.dao.MoneyTransferRepository;
 import com.abhi.dao.NomineeRepository;
 import com.abhi.dao.TransactionRepository;
+import com.abhi.dao.UPIRepository;
 import com.abhi.entity.Account;
 import com.abhi.entity.Customer;
 import com.abhi.entity.FixedDeposit;
 import com.abhi.entity.MoneyTransfer;
 import com.abhi.entity.Nominee;
 import com.abhi.entity.Transaction;
+import com.abhi.entity.UPI;
 import com.smart.helper.Message;
 
 
@@ -58,6 +60,9 @@ public class CustomerController {
 	
 	@Autowired
 	private FDRepository fdRepository;
+
+	@Autowired
+	private UPIRepository upiRepository;
 	
 	@ModelAttribute
 	public void addCommonData(Model model, Principal principal) {
@@ -96,6 +101,18 @@ public class CustomerController {
 		model.addAttribute("account",account);	
 		
 		return "normal/deposit";
+	}
+	
+	@PostMapping("/upi/{accNo}")
+	public String upi(@PathVariable("accNo")Integer accNo, Model model) {
+		model.addAttribute("title","UPI - KDFC Bank");
+		
+		UPI upi = this.upiRepository.findById(accNo).get();
+		System.out.println("Data :"+upi.getVaddress());
+		Account account = this.accountRepository.findById(accNo).get();
+		model.addAttribute("account",account);
+		model.addAttribute("upi",upi);
+		return "normal/upi";
 	}
 	
 	
@@ -504,7 +521,7 @@ public class CustomerController {
 		//FD
 		
 
-		//Nominee
+		//
 		@GetMapping("/fdDetails")
 		public String fdDetail(Model model,Principal principal){
 			model.addAttribute("title","Nominee Details - KDFC Bank");
@@ -512,7 +529,8 @@ public class CustomerController {
 			Customer customer= this.customerRepository.getcustomerByName(customerName);
 			List<Account> account = this.accountRepository.findAll();
 			model.addAttribute("account",account);	
-			List<FixedDeposit> fixedDeposits = this.fdRepository.findAccountByCustomer(customer.getId());
+			//List<FixedDeposit> fixedDeposits = this.fdRepository.findAccountByCustomer(customer.getId());
+			List<FixedDeposit> fixedDeposits = this.fdRepository.findAll();
 
 			model.addAttribute("fixedDeposits",fixedDeposits);
 			
@@ -534,13 +552,20 @@ public class CustomerController {
 						Principal principal,HttpSession session, Account account,
 						@ModelAttribute FixedDeposit fixedDeposit) {
 					
-					try {
-							System.err.println("money...transfer :"+fixedDeposit);
-							transaction.setAmt(fixedDeposit.getFdAmt());
+				try {
+						System.err.println("money...transfer :"+fixedDeposit);
+						transaction.setAmt(fixedDeposit.getFdAmt());
 						String customerName = principal.getName();
 						
 						Customer customer = customerRepository.getcustomerByName(customerName);
 						 int accNo = fixedDeposit.getAccNo();
+						 fixedDeposit.setRate(5);
+						 
+						 fixedDeposit.setmAmt(fixedDeposit.getFdAmt()*fixedDeposit.getDuration()*fixedDeposit.getRate()/100+fixedDeposit.getFdAmt());
+						 fixedDeposit.setInvestDate(LocalDate.now());
+						 fixedDeposit.setmDate(fixedDeposit.getInvestDate().plusMonths(fixedDeposit.getDuration()));
+						 
+						 
 						Account account2 = this.accountRepository.findById(accNo).get();
 						
 						if(account2.getaBalance()>fixedDeposit.getFdAmt()) {
@@ -553,17 +578,20 @@ public class CustomerController {
 //							customer.setBalance(customer.getBalance()-transaction.getAmt());
 //							transaction.settBalance(customer.getBalance());
 							customer.getTransaction().add(transaction);
+							customer.getFixedDeposite().add(fixedDeposit);
+							account.getFixedDeposite().add(fixedDeposit);
 							
 							transaction.setCustomer(customer);
 							//moneyTransfer.setCustomer(customer);
 							account.setCustomer(customer);
-							
+						
+						//	fixedDeposit.setAccount(account);
 							fixedDeposit.setCustomer(customer);
+							
 							this.customerRepository.save(customer);
 							
 							this.accountRepository.save(account2);
 							
-							this.fdRepository.save(fixedDeposit);
 							System.out.println("Added to database");
 //							System.out.println("transaction :"+transaction);
 						session.setAttribute("message", new Message("Successful", "success"));
@@ -578,6 +606,95 @@ public class CustomerController {
 
 					}
 					return "normal/fd_details";
+				}
+				
+				
+				
+				//UPI 
+				
+				@GetMapping("/newUPI")
+				public String newUPI(Model model,Principal principal){
+					model.addAttribute("title","Account Details - KDFC Bank");
+					String customerName = principal.getName();
+					Customer customer= this.customerRepository.getcustomerByName(customerName);
+					
+					List<UPI> upi = this.upiRepository.findAccountByCustomer(customer.getId());
+
+					model.addAttribute("upi",upi);
+					
+					return "normal/upi_detail";
+				}
+				
+				
+				@GetMapping("/openNewUPI")
+				public String openNewUPI(Model model){
+					model.addAttribute("title","UPI Details - KDFC Bank");
+
+					model.addAttribute("upi",new UPI());
+					
+					return "normal/newUPI_form";
+				}
+				
+				@PostMapping("/process-upi")
+				public String processUpi(@ModelAttribute UPI upi,Principal principal, Model model) {
+					System.out.println("Data :"+upi);
+					String customerName = principal.getName();
+				
+		 		    Customer customer = customerRepository.getcustomerByName(customerName);
+		 		   customer.getUPI().add(upi);
+		 		    upi.setCustomer(customer);
+		 		    
+					this.customerRepository.save(customer);
+					this.upiRepository.save(upi);
+					model.addAttribute("upi",new UPI());
+				
+					return "normal/newUPI_form";
+				}
+				
+				//UPI transaction
+				@PostMapping("/process-upiTransaction")
+				public String processUpiTransaction( Transaction transaction,
+						Principal principal,HttpSession session,@ModelAttribute Account account,  UPI upi) {
+					
+					try {
+
+						String customerName = principal.getName();
+						
+						Customer customer = customerRepository.getcustomerByName(customerName);
+					
+						Account account2 = accountRepository.findById(account.getAccNo()).get();
+						
+						if(account2.getaBalance()>upi.getAmt()) {
+							transaction.setDate(new Date(System.currentTimeMillis()));
+							transaction.setTransac("UPI Transfer");
+							
+							account2.setaBalance(account2.getaBalance()-upi.getAmt());
+							transaction.settBalance(account2.getaBalance());
+							
+//							customer.setBalance(customer.getBalance()-transaction.getAmt());
+//							transaction.settBalance(customer.getBalance());
+							customer.getTransaction().add(transaction);
+							transaction.setCustomer(customer);
+							account.setCustomer(customer);
+							upi.setCustomer(customer);
+							this.customerRepository.save(customer);
+							this.upiRepository.save(upi);
+							this.accountRepository.save(account2);
+							
+							System.out.println("Added to database");
+//							System.out.println("transaction :"+transaction);
+						session.setAttribute("message", new Message("Successful", "success"));
+						}else {
+							throw new Exception();
+						}
+						
+					} catch (Exception e) {
+						System.out.println("ERROR "+e.getMessage());
+						e.printStackTrace();
+						session.setAttribute("message", new Message("Failed", "danger"));
+
+					}
+					return "redirect:/customer/newAccount";
 				}
 				
 		

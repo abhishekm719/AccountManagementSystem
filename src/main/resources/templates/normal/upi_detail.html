@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="normal/base::layout(~{::section})">
+<head>
+<meta charset="UTF-8">
+<title>Customer Dashboard</title>
+</head>
+<body>
+	<section>
+	
+	<h1>UPI Details</h1>
+	
+	<div class="card mr-3 ml-3">
+		<div class="card-body">
+			<h3 class="text-center">Details of :<span th:text="${customer.name} "></span> Upi </h3>
+	
+			<table class="table">
+			  <thead>
+			    <tr>
+			   
+			      <th scope="col">Account number</th>
+			      <th scope="col">Virtual address</th>
+			      		      
+			    </tr>
+			  </thead>
+			  <tbody>
+			    <tr th:each="c:${upi}">
+			      <td scope="row" th:text="${c.accNo}">1</td> 
+			       
+			      <td th:text="${c.vaddress}" >Otto</td>
+			      
+			      <form method="post" th:action="@{'upi/'+${c.accNo}}">
+			      <td>
+			      	<button type="submit" class= "btn btn-danger btn-sm">UPI Transfer</button>
+		
+			      </td>
+			      </form>
+			      
+			    </tr>
+			  </tbody>
+			</table>
+			    <div class=" mr-3">
+				  <a class="nav-link "  href="#" th:href="@{openNewUPI}">Open a New Account</a>
+	   		    </div>
+		</div>
+	
+	</div>
+	
+	</section>
+</body>
+</html>

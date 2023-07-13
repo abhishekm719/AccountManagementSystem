@@ -71,9 +71,18 @@ public class Customer {
 	@OneToMany(cascade=CascadeType.ALL,mappedBy="customer")
 	private List<FixedDeposit> FixedDeposite =new ArrayList<>();
 	
+	@OneToMany(cascade=CascadeType.ALL,mappedBy="customer")
+	private List<UPI> UPI =new ArrayList<>();
 	
-	public Customer(int id, String name, Date dob, String gender, String email, 
-			String password, String role) {
+	
+
+	public Customer(int id,
+			@NotBlank(message = "Name field is required") @Size(min = 2, max = 20, message = "min 2 to max 20 characters are allowed !") String name,
+			Date dob, @NotBlank(message = "Gender field is required") String gender,
+			@Email(regexp = "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$") String email,
+			@NotBlank(message = "Passsword field is required") String password, String role,
+			List<Transaction> transaction, List<Account> account, List<Nominee> nominee, List<MoneyTransfer> moneyT,
+			List<FixedDeposit> fixedDeposite, List<com.abhi.entity.UPI> uPI) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -82,12 +91,14 @@ public class Customer {
 		this.email = email;
 		this.password = password;
 		this.role = role;
-//		this.accNo = accNo;
-//		this.accTyp = accTyp;
-//		this.balance = balance;
-//		this.nominee=nominee;
+		this.transaction = transaction;
+		this.account = account;
+		this.nominee = nominee;
+		this.moneyT = moneyT;
+		FixedDeposite = fixedDeposite;
+		UPI = uPI;
 	}
-	
+
 	public Customer() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -214,18 +225,25 @@ public class Customer {
 	public void setFixedDeposite(List<FixedDeposit> fixedDeposite) {
 		FixedDeposite = fixedDeposite;
 	}
+	
+	
+
+	public List<UPI> getUPI() {
+		return UPI;
+	}
+
+	public void setUPI(List<UPI> uPI) {
+		UPI = uPI;
+	}
 
 	@Override
 	public String toString() {
 		return "Customer [id=" + id + ", name=" + name + ", dob=" + dob + ", gender=" + gender + ", email=" + email
 				+ ", password=" + password + ", role=" + role + ", transaction=" + transaction + ", account=" + account
-				+ ", nominee=" + nominee + ", moneyT=" + moneyT + ", FixedDeposite=" + FixedDeposite + "]";
+				+ ", nominee=" + nominee + ", moneyT=" + moneyT + ", FixedDeposite=" + FixedDeposite + ", UPI=" + UPI
+				+ "]";
 	}
 
 	
-
-	
-	
-
 	
 }

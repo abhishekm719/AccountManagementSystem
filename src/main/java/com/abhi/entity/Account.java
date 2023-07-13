@@ -1,10 +1,15 @@
 package com.abhi.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Account {
@@ -19,6 +24,9 @@ public class Account {
 	@ManyToOne
 	private Customer customer;
 
+	@OneToMany(cascade=CascadeType.ALL,mappedBy="account")
+	private List<FixedDeposit> FixedDeposite =new ArrayList<>();
+	
 	public int getaId() {
 		return aId;
 	}
@@ -59,26 +67,39 @@ public class Account {
 		this.customer = customer;
 	}
 
+	
+	
+	public List<FixedDeposit> getFixedDeposite() {
+		return FixedDeposite;
+	}
+
+	public void setFixedDeposite(List<FixedDeposit> fixedDeposite) {
+		FixedDeposite = fixedDeposite;
+	}
+
 	public Account() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public Account(int aId, double aBalance, int accNo, String accType, Customer customer) {
+	public Account(int aId, double aBalance, int accNo, String accType, Customer customer,
+			List<FixedDeposit> fixedDeposite) {
 		super();
 		this.aId = aId;
 		this.aBalance = aBalance;
 		this.accNo = accNo;
 		this.accType = accType;
 		this.customer = customer;
+		FixedDeposite = fixedDeposite;
 	}
 
 	@Override
 	public String toString() {
 		return "Account [aId=" + aId + ", aBalance=" + aBalance + ", accNo=" + accNo + ", accType=" + accType
-				+ ", customer=" + customer + "]";
+				+ ", customer=" + customer + ", FixedDeposite=" + FixedDeposite + "]";
 	}
-	
+
+
 
 
 }
