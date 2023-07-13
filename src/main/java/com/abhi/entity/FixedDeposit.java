@@ -1,10 +1,16 @@
 package com.abhi.entity;
 
+import java.time.LocalDate;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 public class FixedDeposit {
@@ -16,12 +22,22 @@ public class FixedDeposit {
 	private double fdAmt;
 	private int duration;
 	private double mAmt;
+	private int rate;
 	
+	
+	private LocalDate investDate;
+	
+	
+	private LocalDate mDate;
+
 
 	@ManyToOne
 	private Customer customer;
-
-
+	
+	@ManyToOne
+	private Account account;
+	
+	
 	public int getFdId() {
 		return fdId;
 	}
@@ -83,28 +99,77 @@ public class FixedDeposit {
 	}
 
 
+	public int getRate() {
+		return rate;
+	}
+
+
+	public void setRate(int rate) {
+		this.rate = rate;
+	}
+
+
+	public LocalDate getInvestDate() {
+		return investDate;
+	}
+
+
+	public void setInvestDate(LocalDate investDate) {
+		this.investDate = investDate;
+	}
+
+
+	public LocalDate getmDate() {
+		return mDate;
+	}
+
+
+	public void setmDate(LocalDate mDate) {
+		this.mDate = mDate;
+	}
+
+
+	public Account getAccount() {
+		return account;
+	}
+
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
+
+
+
 	public FixedDeposit() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
 
-	public FixedDeposit(int fdId, int accNo, double fdAmt, int duration,double mAmt, Customer customer) {
+	public FixedDeposit(int accNo, int fdId, double fdAmt, int duration, double mAmt, int rate, LocalDate investDate,
+			LocalDate mDate, Customer customer, Account account) {
 		super();
-		this.fdId = fdId;
 		this.accNo = accNo;
+		this.fdId = fdId;
 		this.fdAmt = fdAmt;
 		this.duration = duration;
-		this.mAmt=mAmt;
+		this.mAmt = mAmt;
+		this.rate = rate;
+		this.investDate = investDate;
+		this.mDate = mDate;
 		this.customer = customer;
+		this.account = account;
 	}
 
 
 	@Override
 	public String toString() {
-		return "FixedDeposite [fdId=" + fdId + ", accNo=" + accNo + ", fdAmt=" + fdAmt + ", duration=" + duration
-				+ ", mAmt=" + mAmt + ", customer=" + customer + "]";
+		return "FixedDeposit [accNo=" + accNo + ", fdId=" + fdId + ", fdAmt=" + fdAmt + ", duration=" + duration
+				+ ", mAmt=" + mAmt + ", rate=" + rate + ", investDate=" + investDate + ", mDate=" + mDate
+				+ ", customer=" + customer + ", account=" + account + "]";
 	}
+
+
 
 
 	

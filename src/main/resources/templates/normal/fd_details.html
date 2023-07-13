@@ -20,8 +20,9 @@
 			      <th scope="col">Account number</th>
 			      <th scope="col">FD Amount</th>
 			      <th scope="col">Duration</th>
-			      <th scope="col">Maturity Date</th>
-			       <th scope="col">Maturity amount</th>
+			      <th scope="col">Maturity Amount</th>
+			      <th scope="col">Investment Date </th>
+			       <th scope="col">Maturity Date </th>
 			    </tr>
 			  </thead>
 			  <tbody>
@@ -31,8 +32,8 @@
 			      <td th:text="${c.fdAmt}" >Otto</td>
 			      <td th:text="${c.duration}">@mdo</td>
 			      <td th:text="${c.mAmt}">@mdo</td> 
-			      <td th:text="${c.duration}">@mdo</td>  
-			      
+			      <td th:text="${c.investDate}">@mdo</td>  
+			       <td th:text="${c.mDate}">@mdo</td> 
 			 <!--      <form method="get" th:action="@{'nomineeDelete/'+${c.nId}}">
 			      <td> <button class= "btn btn-danger btn-sm">Delete</button>
 		
